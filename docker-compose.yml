@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+
+  psarchive:
+    # build from Dockerfile in the same folder ...
+    # build: .
+    # ... or use an already built image
+    image: sirkos/psrchive
+    # link some folder into the container
+    volumes:
+      - ./share:/home/share
+    # keep the container open, no matter what
+    stdin_open: true
+    tty: true

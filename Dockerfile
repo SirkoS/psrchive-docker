@@ -98,7 +98,8 @@ RUN wget http://www.atnf.csiro.au/people/pulsar/psrcat/downloads/psrcat_pkg.tar.
     git clone https://bitbucket.org/psrsoft/tempo2.git --depth=1 && \
     git clone git://git.code.sf.net/p/dspsr/code dspsr --depth=1 && \
     git clone git://git.code.sf.net/p/psrchive/code psrchive --depth=1 && \
-    git clone https://git.astron.nl/ro/dal2.git DAL --depth=1
+    git clone https://git.astron.nl/ro/dal2.git DAL --depth=1 && \
+    git clone https://github.com/ajameson/pfits.git --depth=1
 
 # DAL
 ENV DAL $PSRHOME/DAL
@@ -163,6 +164,17 @@ RUN ./bootstrap && \
     make -j $(nproc) && \
     make && \
     make install
+
+# pfits
+WORKDIR $PSRHOME/pfits
+ENV PATH $PATH:$PSRHOME/pfits/install/bin
+RUN ./bootstrap && \
+    ./configure --prefix=$PSRHOME/pfits/install && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+# finalize
 USER root
 RUN env | awk '{print "export ",$0}' >> $HOME/.profile
 WORKDIR $HOME

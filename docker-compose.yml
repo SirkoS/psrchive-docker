@@ -5,7 +5,7 @@ services:
     # build from Dockerfile in the same folder ...
     # build: .
     # ... or use an already built image
-    image: sirkos/psrchive
+    image: sirkos/psrchive:pfits
     # link some folder into the container
     volumes:
       - ./share:/home/share

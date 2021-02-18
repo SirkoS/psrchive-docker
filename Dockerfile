@@ -65,6 +65,8 @@ RUN apt-get --no-install-recommends -y install \
     libltdl-dev \
     libgsl-dev \
     libgsl23 \
+    linux-perf \
+    linux-base \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y clean
 

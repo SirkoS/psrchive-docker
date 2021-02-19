@@ -22,51 +22,51 @@ RUN adduser --disabled-password --gecos 'unprivileged user' psr && \
     mkdir -p /home/psr/.ssh && \
     chown -R psr:psr /home/psr/.ssh
 
-# Create space for ssh daemon and update the system
+# Install dependencies
 RUN sed -i "s/ main/ main non-free/g" /etc/apt/sources.list && \
     mkdir /var/run/sshd && \
     apt-get -y check && \
     apt-get -y update && \
-    apt-get install -y apt-utils apt-transport-https software-properties-common && \
-    apt-get -y upgrade
-
-# Install dependencies
-RUN apt-get --no-install-recommends -y install \
-    build-essential \
-    autoconf \
-    autotools-dev \
-    automake \
-    autogen \
-    libtool \
-    pkg-config \
-    cmake \
-    csh \
-    gcc \
-    gfortran \
-    wget \
-    git \
-    libcfitsio-dev \
-    pgplot5 \
-    swig \
-    python \
-    python-dev \
-    python-pip \
-    libfftw3-3 \
-    libfftw3-bin \
-    libfftw3-dev \
-    libfftw3-single3 \
-    libx11-dev \
-    libpng-dev \
-    libpnglite-dev \
-    libhdf5-dev \
-    libhdf5-serial-dev \
-    libxml2 \
-    libxml2-dev \
-    libltdl-dev \
-    libgsl-dev \
-    libgsl23 \
-    linux-perf \
-    linux-base \
+    apt-get -y upgrade && \
+    apt-get --no-install-recommends -y install \
+      apt-utils \
+      apt-transport-https \
+      software-properties-common \
+      build-essential \
+      autoconf \
+      autotools-dev \
+      automake \
+      autogen \
+      libtool \
+      pkg-config \
+      cmake \
+      csh \
+      gcc \
+      gfortran \
+      wget \
+      git \
+      libcfitsio-dev \
+      pgplot5 \
+      swig \
+      python \
+      python-dev \
+      python-pip \
+      libfftw3-3 \
+      libfftw3-bin \
+      libfftw3-dev \
+      libfftw3-single3 \
+      libx11-dev \
+      libpng-dev \
+      libpnglite-dev \
+      libhdf5-dev \
+      libhdf5-serial-dev \
+      libxml2 \
+      libxml2-dev \
+      libltdl-dev \
+      libgsl-dev \
+      libgsl23 \
+      linux-perf \
+      linux-base \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y clean
 
@@ -100,7 +100,8 @@ RUN wget http://www.atnf.csiro.au/people/pulsar/psrcat/downloads/psrcat_pkg.tar.
     git clone https://bitbucket.org/psrsoft/tempo2.git --depth=1 && \
     git clone git://git.code.sf.net/p/dspsr/code dspsr --depth=1 && \
     git clone git://git.code.sf.net/p/psrchive/code psrchive --depth=1 && \
-    git clone https://git.astron.nl/ro/dal2.git DAL --depth=1
+    git clone https://git.astron.nl/ro/dal2.git DAL --depth=1 && \
+    git clone https://github.com/ajameson/pfits.git --depth=1
 
 # DAL
 ENV DAL $PSRHOME/DAL
@@ -165,6 +166,17 @@ RUN ./bootstrap && \
     make -j $(nproc) && \
     make && \
     make install
+
+# pfits
+WORKDIR $PSRHOME/pfits
+ENV PATH $PATH:$PSRHOME/pfits/install/bin
+RUN ./bootstrap && \
+    ./configure --prefix=$PSRHOME/pfits/install && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+# finalize
 USER root
 RUN env | awk '{print "export ",$0}' >> $HOME/.profile
 WORKDIR $HOME

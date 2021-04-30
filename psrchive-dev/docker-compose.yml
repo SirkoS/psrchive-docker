@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+
+  psrchive:
+    # build from Dockerfile in the same folder ...
+    # build: .
+    # ... or use an already built image
+    image: sirkos/psrchive-dev
+    # give the container a proper name
+    container_name: psrchive-dev
+    # link some folder into the container
+    volumes:
+      - ./share:/home/share
+    # keep the container open, no matter what
+    stdin_open: true
+    tty: true
+    # reduce amount of (permanently stored) logging data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
